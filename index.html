@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Upload files</title>
+    <script type="text/javascript">
+      function onload() {}
+
+      function sub() {
+        var resp = document.getElementById("response");
+        var file = window.uploadFile;
+        var xhr = new XMLHttpRequest();
+        if (!window.fileMeta || !window.uploadFile) {
+          resp.innerHTML = "ERROR";
+          return;
+        }
+        xhr.open("POST", "/upload/" + window.fileMeta.name, false);
+        xhr.setRequestHeader("Content-Type", window.fileMeta.type);
+        xhr.onreadystatechange = function () {
+          if (xhr.readyState == 1 || xhr.readyState == 3) {
+            resp.innerHTML = "Processing";
+          } else if (xhr.readyState == 4) {
+            resp.innerHTML = "End: ";
+            if (xhr.status === 200) resp.innerHTML += "Success";
+            else resp.innerHTML += "Error";
+          }
+        };
+        xhr.send(file);
+      }
+    </script>
+  </head>
+  <body onload="onload()">
+    <input id="the-file" name="file" type="file" />
+    <!-- <input id="data" name="data" type="text"/> -->
+    <button onclick="sub()">submit</button>
+    <p id="response"></p>
+  </body>
+  <script>
+    var fileinput = document.getElementById("the-file");
+    var array;
+    var binaryString;
+    fileinput.addEventListener(
+      "change",
+      function () {
+        var reader = new FileReader();
+        reader.onload = function () {
+          var arrayBuffer = this.result,
+            array = new Uint8Array(arrayBuffer);
+          window.uploadFile = array;
+        };
+        window.fileMeta = {
+          name: this.files[0].name,
+          type: this.files[0].type,
+        };
+        reader.readAsArrayBuffer(this.files[0]);
+      },
+      false
+    );
+  </script>
+</html>
