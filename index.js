@@ -49,7 +49,7 @@ http
           res.end("bad request");
         }
         const fileName = url.match(/\?.*?filename=([^&]*)&{0,1}/)[1];
-        const fpath = `${cwd}/files/${fileName}`;
+        const fpath = `${cwd}/files/${fileName.toLowerCase()}`;
         if (!fs.existsSync(fpath)) {
           res.writeHead(404);
           res.end("requested file not found");
@@ -70,7 +70,6 @@ http
     }
     if (url.startsWith("/api/files-list")) {
       const files = fs.readdirSync("./files/");
-      console.log(files);
       res.writeHead(200, { "Content-Type": "application/json" });
       return res.end(JSON.stringify({ files }));
     }
