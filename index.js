@@ -13,10 +13,10 @@ http
     console.log(url);
     if (url == "/" || url == "" || url == "/index") {
       res.writeHead(200, { "Content-Type": "text/html" });
-      data = fs.readFileSync("./index.html");
+      const data = fs.readFileSync("./index.html");
       return res.end(data);
     }
-    if (url.startsWith("/upload") && method == "post") {
+    if (url.startsWith("/api/upload") && method == "post") {
       try {
         let binary = [];
         if (!url.includes("?") || !url.includes("filename=")) {
@@ -42,7 +42,7 @@ http
 
       return;
     }
-    if (url.startsWith("/download")) {
+    if (url.startsWith("/api/download")) {
       try {
         if (!url.includes("?") || !url.includes("filename=")) {
           res.writeHead(400);
@@ -62,6 +62,17 @@ http
         res.end(err.toString());
       }
       return;
+    }
+    if (url.startsWith("/download")) {
+      res.writeHead(200, { "Content-Type": "text/html" });
+      const data = fs.readFileSync("./downloads.html");
+      return res.end(data);
+    }
+    if (url.startsWith("/api/files-list")) {
+      const files = fs.readdirSync("./files/");
+      console.log(files);
+      res.writeHead(200, { "Content-Type": "application/json" });
+      return res.end(JSON.stringify({ files }));
     }
     res.writeHead(404, { "Content-Type": "text/html" });
     res.end(
