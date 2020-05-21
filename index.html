@@ -13,7 +13,7 @@
           resp.innerHTML = "ERROR";
           return;
         }
-        xhr.open("POST", "/api/upload/" + window.fileMeta.name, false);
+        xhr.open("POST", "/api/upload?filename=" + window.fileMeta.name, false);
         xhr.setRequestHeader("Content-Type", window.fileMeta.type);
         xhr.onreadystatechange = function () {
           if (xhr.readyState == 1 || xhr.readyState == 3) {
