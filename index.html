@@ -21,10 +21,10 @@
           } else if (xhr.readyState == 4) {
             resp.innerHTML = "End: ";
             if (xhr.status === 200) resp.innerHTML += "Success";
-            else if(xhr.status === 500) resp.innerHTML += "Server Error";
-            else if(xhr.status === 400) resp.innerHTML += "Client Error";
-            else if(xhr.status === 300) resp.innerHTML += "Redirect Status";
-            else if(xhr.status === 100) resp.innerHTML += "Informational Status";
+            else if(500<= xhr.status < 600) resp.innerHTML += "Server Error";
+            else if(400<= xhr.status < 500) resp.innerHTML += "Client Error";
+            else if(300<= xhr.status < 400) resp.innerHTML += "Redirect Status";
+            else if(100<= xhr.status < 200) resp.innerHTML += "Informational Status";
             else resp.innerHTML += "Invalid Error";
           }
         };
