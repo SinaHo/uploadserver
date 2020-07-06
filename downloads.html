@@ -1,29 +1,32 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>Downloads</title>
-    <script type="text/javascript">
-      function AnchorTemplate(url, name) {
-        return `<a target="_blank" href="${url}">${name}</a> <br/> <hr/>`;
-      }
-      function load() {
-        const dataXHR = new XMLHttpRequest();
-        dataXHR.open("GET", "/api/files-list", false);
-        dataXHR.send();
-        const data = JSON.parse(dataXHR.responseText);
-        const filesElem = document.querySelector("#files");
-        data.files.forEach((filename) => {
-          filesElem.innerHTML += AnchorTemplate(
-            `/api/download?filename=${filename}`,
-            filename
-          );
-        });
-      }
-    </script>
-  </head>
-  <body onload="load()">
-    <h2>Files List</h2>
-    <a href="/"><button>Back to Index</button></a> <br />
-    <div id="files"></div>
-  </body>
+
+<head>
+  <title>Downloads</title>
+  <script type="text/javascript">
+    function AnchorTemplate(url, name) {
+      return `<a target="_blank" href="${url}">${name}</a> <br/> <hr/>`;
+    }
+    function load() {
+      const dataXHR = new XMLHttpRequest();
+      dataXHR.open("GET", "/api/files-list", false);
+      dataXHR.send();
+      const data = JSON.parse(dataXHR.responseText);
+      const filesElem = document.querySelector("#files");
+      data.files.forEach((filename) => {
+        filesElem.innerHTML += AnchorTemplate(
+          `/api/download?filename=${encodeURI(filename)}`,
+          filename
+        );
+      });
+    }
+  </script>
+</head>
+
+<body onload="load()">
+  <h2>Files List</h2>
+  <a href="/"><button>Back to Index</button></a> <br />
+  <div id="files"></div>
+</body>
+
 </html>

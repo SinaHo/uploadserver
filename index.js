@@ -8,15 +8,16 @@ try {
 } catch (err) {}
 http
   .createServer(function (req, res) {
-    const url = req.url.toLowerCase();
+    const url = req.url;
+    const _lower_url = url.toLowerCase();
     const method = req.method.toLowerCase();
     console.log(url);
-    if (url == "/" || url == "" || url == "/index") {
+    if (["/", "", "/index"].includes(_lower_url)) {
       res.writeHead(200, { "Content-Type": "text/html" });
       const data = fs.readFileSync("./index.html");
       return res.end(data);
     }
-    if (url.startsWith("/api/upload") && method == "post") {
+    if (_lower_url.startsWith("/api/upload") && method == "post") {
       try {
         let binary = [];
         if (!url.includes("?") || !url.includes("filename=")) {
@@ -42,33 +43,41 @@ http
 
       return;
     }
-    if (url.startsWith("/api/download")) {
+    if (_lower_url.startsWith("/api/download")) {
       try {
         if (!url.includes("?") || !url.includes("filename=")) {
           res.writeHead(400);
           res.end("bad request");
         }
         const fileName = url.match(/\?.*?filename=([^&]*)&{0,1}/)[1];
-        const fpath = `${cwd}/files/${fileName.toLowerCase()}`;
+        const fpath = `${cwd}/files/${decodeURI(fileName)}`;
+        console.log("fpath = ", fpath);
+
         if (!fs.existsSync(fpath)) {
           res.writeHead(404);
           res.end("requested file not found");
         }
-        const fileData = fs.readFileSync(fpath);
-        res.writeHead(200, { "content-type": "image/png" });
-        res.end(fileData);
+        res.setHeader(
+          "Content-disposition",
+          "attachment; filename=" + fileName
+        );
+        res.setHeader("content-type", "image/png");
+        res.writeHead(200);
+
+        const _readStream = fs.createReadStream(fpath);
+        _readStream.pipe(res);
       } catch (err) {
         res.writeHead(400);
         res.end(err.toString());
       }
       return;
     }
-    if (url.startsWith("/download")) {
+    if (_lower_url.startsWith("/download")) {
       res.writeHead(200, { "Content-Type": "text/html" });
       const data = fs.readFileSync("./downloads.html");
       return res.end(data);
     }
-    if (url.startsWith("/api/files-list")) {
+    if (_lower_url.startsWith("/api/files-list")) {
       const files = fs.readdirSync("./files/");
       res.writeHead(200, { "Content-Type": "application/json" });
       return res.end(JSON.stringify({ files }));
